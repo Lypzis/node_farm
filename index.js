@@ -74,10 +74,12 @@ const server = http.createServer((req, res) => {
     //console.log(req);
     //console.log(req.headers);
     console.log(req.url);
-    //Routing
-    const pathName = req.url;
 
-    switch (pathName) {
+    // this object is destructured, these are two constants
+    const {query, pathname} = url.parse(req.url, true);
+    let output;
+
+    switch (pathname) {
         case '/':
             res.writeHead(200, {'Content-type': 'text/html'});
 
@@ -85,7 +87,7 @@ const server = http.createServer((req, res) => {
             const cardsHtml  = dataObject.map(e => replaceTemplate(tempCard, e)).join(''); // join to transform the result into a string
             
             // then inserts them inside the overview template
-            const output = tempOverview.replace(/{%PRODUCT_CARDS%}/g, cardsHtml);
+            output = tempOverview.replace(/{%PRODUCT_CARDS%}/g, cardsHtml);
 
             res.end(output);
             break;
@@ -93,7 +95,11 @@ const server = http.createServer((req, res) => {
             res.end('This is the overview');
             break;
         case '/product':
-            res.end('This is the product');
+            res.writeHead(200, {'Content-type': 'text/html'});
+            const product = dataObject[query.id]; // the selected product from the query of the respective id
+            output = replaceTemplate(tempProduct, product);
+            
+            res.end(output);
             break;
         case '/api':
                 res.writeHead(200, {'Content-type': 'application/json'}); // the type of content for the header
