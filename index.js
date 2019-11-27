@@ -2,6 +2,8 @@ const fs = require('fs'); // fs stands for 'file system'
 const http = require('http'); // a server
 const url = require('url');
 
+const replaceTemplate = require('./modules/replaceTemplate');
+
 /**
  * Examples of read and write files in Node
  * - Blocking, synchronous way
@@ -51,29 +53,12 @@ const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.htm
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObject = JSON.parse(data); // object from the data read from the json file.
 
-const replaceTemplate = (temp, product) => {
-    // use regex for replace
-    let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
-    output = output.replace(/{%IMAGE%}/g, product.image); // good practice
-    output = output.replace(/{%QUANTITY%}/g, product.quantity);
-    output = output.replace(/{%PRICE%}/g, product.price);
-    output = output.replace(/{%ID%}/g, product.id);
-    output = output.replace(/{%FROM%}/g, product.from);
-    output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
-    output = output.replace(/{%DESCRIPTION%}/g, product.description);
-
-    if(!product.organic) output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
-    else output = output.replace(/{%NOT_ORGANIC%}/g, product.organic);
-
-    return output;
-}
-
 const server = http.createServer((req, res) => {
     // each time the server receives a request,
     // this callback funtion is fired;
     //console.log(req);
     //console.log(req.headers);
-    console.log(req.url);
+    //console.log(req.url);
 
     // this object is destructured, these are two constants
     const {query, pathname} = url.parse(req.url, true);
